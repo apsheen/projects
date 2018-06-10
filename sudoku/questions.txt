@@ -1,0 +1,21 @@
+1. It means that the two strings are the same.
+
+2.  if(strcmp(g.level, "debug") == 0)
+    {
+        int max = 9;
+    }
+    
+    else
+    {
+        int max = 1024;
+    }
+    
+3. When the specific board number you want to play that you have inputted is not an integer.
+
+4. g.y and g.x represent the coordinates at which the user's cursor belongs.
+
+5. show_cursor
+
+6. Around line 162, you could add additional case statements to handle keystrokes besides N, R, and ctrl-L
+
+7. There is 1 blank in debug #1, 2 blanks in debug #2, and 9 blanks in debug #9;

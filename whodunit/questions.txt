@@ -1,0 +1,54 @@
+0. BMP: supports over 4 billion colors (32 bit color)
+   GIF: supports 256 colors (8 bit color)
+   JPEGS and PNGS: support 16 million colors (24 bit color)
+
+1. GIF's support animation.
+
+2. Lossy compression throws away some data in the file,
+    but lossless compresses the file so that is reversible, 
+    and the quality of the file can move back and forth between the two.
+
+3. JPEGs are lossy-compressed.
+
+4. The system modifies the filename's first character in it's directory to tell the file has been deleted
+    and the directory can be re-used. Then the system moves all of the file’s data to the hard drive.
+    The actual file data is never erased. 
+    
+5. You can physically destroy the drive, degauss the drive (most likely making the drive unusable in the process),
+    or overwriting the drive's data.
+
+6. stdint.h is a header file in the C standard library introduced in the C99 standard library section 7.18.
+    It allows programmers to write more portable code by specifying integer types, 
+    and the defined minimum and maximum allowable values for each type.
+    This header is particularly useful for embedded programming.
+
+7. You can fill up the excat amount of space you want in a file.
+
+8. BYTE: 1 byte
+   LONG: 4 bytes
+   DWORD: 4 bytes
+   WORD: 2 bytes
+
+9. The first two bytes of any BMP file in ASCII is BM.
+
+10. bfSize is the size of the whole bitmap file, including header files.
+    biSize is the size of the BITMAPINFOHEADER header, which is constant
+
+11. If biHeight is negative, this means that the uncompressed bitmap is a top-down device-independent bitmap 
+    with the origin at the upper left corner.
+
+12. The biBitCount field in BITMAPINFOHEADER specifies the BMP’s color depth.
+
+13. fopen might return NULL in copy.c:37 if there is no space to create an outfile on the computer.
+
+14. The third argument to fread is always 1 in the code because
+Why is the third argument to fread always 1 in our code?
+
+15. copy.c:70 would assign padding the value of 3.
+
+16. fseek is a function that allows you to change the position of the file pointer when reading, writing, or appending a file.
+    This function is declared in the header file stdio.h.
+
+17. SEEK_CUR is an integer constant which specifies that the offset provided is relative to the current file position.
+
+18. Sure looks like David murdered poor Mr. Boddy!
