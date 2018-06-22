@@ -2,6 +2,7 @@ from twython import Twython, TwythonAuthError, TwythonError, TwythonRateLimitErr
 from analyzer import analyze
 from chart import chart
 import timer
+from sentiment import sentiment
 
 #set up OAuth
 API_KEY = ' ' 
@@ -39,101 +40,44 @@ for p in range(2006):   #positive reference
 dataPath = 'data.txt'
 dataFile = open(dataPath, 'r')
 
-data = dataFile.readlines()
+Data = dataFile.readlines()
 
-pos = data[2]
-neutral = data[3]
-negative = data[4]
+pos = Data[2]
+neutral = Data[3]
+neg = Data[4]
 
 #get rid of the "/n"
-for d in range(1):
-    convertneg = ""
-    convertneg = negative[n]
-    convertneg = convertneg[:-1]
-    negative[n] = convertneg
+for d in range(6):
+    convertdat = ""
+    convertdat = Data[d]
+    convertdat = convertdat[:-1]
+    Data[d] = convertdat
 
-#use data to carry on where the program stopped
-negmessage = [data[0], ' Apologies for Trump and his rudeness today. @realDonaldTrump']
-posmessage = [data[1], ' Wow, Donald Trump managed to actually be decent today! @realDonaldTrump']
+#check if there have been any other tweets since program was stopped - TODO
+previous = twitter.get_user_timeline(screen_name = '@realDonaldTrump') 
+t = 0
 
-#check if there have been any other tweets since program was stopped
-#TODO
+while Data[5] != previous[t]['created_at']:
+    sentiment(Data, previous[t]['text'], negative, positive, twitter)
+    t = t + 1
+
+#update timestamp
+Data[5] = previous[0]['created_at']
+reinit = (dataPath, "w")
+reinit.write = (Data)
 
 class MyStreamer(TwythonStreamer):
     def on_success(self, data):
-        if 'text' in data:
-            #call sentiment analysis
-            score = analyze(str.lower(data['text']), negative, positive)
+        sentiment(Data, data['text'], negative, positive, twitter) 
 
-            #if good/neutral sentiment
-            if(score >= 0):
-                print(data['text'])
-                print(score)
-
-                #if 5 minutes no input to verify, continue with posmessage - change later
-                try:
-                    answer = timer.input_with_timeout("Is this tweet actually positive/neutral? Y for yes, N for no: ", 10)
-                except timer.TimeoutExpired:
-                    print(score)
-
-                    chart(pos, neutral, negative)
-                    photo = open('chart.png', 'rb')
-                    response = twitter.upload_media(media=photo)
-                    twitter.update_status(status=negmessage, media_ids=[response['media_id']])
-                
-                if str.lower(answer) == "y":
-                    print(score)
-
-                    chart(pos, neutral, negative)
-                    photo = open('chart.png', 'rb')
-                    response = twitter.upload_media(media=photo)
-                    twitter.update_status(status=negmessage, media_ids=[response['media_id']])
-
-                elif str.lower(answer) == "n":
-                    print(score)
-
-                    chart(pos, neutral, negative)
-                    photo = open('chart.png', 'rb')
-                    response = twitter.upload_media(media=photo)
-                    twitter.update_status(status=negmessage, media_ids=[response['media_id']])
-
-            #if bad sentiment
-            if(score < 0):
-                #if 5 minutes no input to verify, continue with negmessage - change later
-                print(data['text'])
-                print(score)
-
-                try:
-                    answer = timer.input_with_timeout("Is this tweet actually negative? Y for yes, N for no: ", 10)
-                except timer.TimeoutExpired:
-                    print(score)
-
-                    chart(pos, neutral, negative)
-                    photo = open('chart.png', 'rb')
-                    response = twitter.upload_media(media=photo)
-                    twitter.update_status(status=negmessage, media_ids=[response['media_id']])
-                
-                if str.lower(answer) == "y":
-                    print(score)
-
-                    chart(pos, neutral, negative)
-                    photo = open('chart.png', 'rb')
-                    response = twitter.upload_media(media=photo)
-                    twitter.update_status(status=negmessage, media_ids=[response['media_id']])
-
-                elif str.lower(answer) == "n":
-                    print(score)
-
-                    chart(pos, neutral, negative)
-                    photo = open('chart.png', 'rb')
-                    response = twitter.upload_media(media=photo)
-                    twitter.update_status(status=negmessage, media_ids=[response['media_id']])
-
-                #save timestamp, new data for positive, negative, neutral
-                #TODO
+        #save timestamp, new data for positive, negative, neutral
+        timestamp = twitter.get_user_timeline(screen_name = '@realDonaldTrump')
+        Data[5] = timestamp[0]['created_at']
+        update = (dataPath, "w")
+        update.write = (Data)
 
     def on_error(self, status_code, data):
         print(status_code)
 
 stream = MyStreamer(API_KEY, API_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
-stream.statuses.filter(follow='25073877') # @realDonaldTrump
+stream.statuses.filter(follow='25073877') #@realDonaldTrump
